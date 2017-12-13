@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+		http://www.springframework.org/schema/beans/spring-beans.xsd   
+		http://www.springframework.org/schema/context   
+		http://www.springframework.org/schema/context/spring-context.xsd   
+		http://www.springframework.org/schema/tx   
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/task 
+		http://www.springframework.org/schema/task/spring-task.xsd 
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+
+	<!-- 扫描包-->
+	<context:component-scan base-package="com.bool.spmcache"/> 
+	
+	<!-- 对注解的支持 -->
+	<context:annotation-config/>
+	
+	<!-- 缓存提供服务，spymemcache缓存客户端，用户可以将此框架换成其它的，如spymemcache -->
+	<bean id="spyProvider" class="com.bool.spmcache.provider.impl.SpyProvider">
+		<!-- 多个服务器用逗号隔开,如：127.0.0.1:11211,192.168.1.188:11211 -->
+		<constructor-arg name="servers" value="127.0.0.1:11211" />
+		<constructor-arg name="keyPrefix" value="SPMC_" />
+	</bean>
+	
+	
+	<!-- 缓存提供服务，官方缓存客户端，用户可以将此框架换成其它的，如spymemcache -->
+	<bean id="dangaProvider" class="com.bool.spmcache.provider.impl.DangaProvider">
+		<constructor-arg name="servers" value="127.0.0.1:11211" />
+		<constructor-arg name="keyPrefix" value="SPMC_" />
+	</bean>
+	
+	
+	<bean id="spMCacheAspect" class="com.bool.spmcache.aspect.SPMCacheAspect">
+		<property name="cahceProvider" ref="spyProvider"></property>
+	</bean>
+	
+  	<!-- AOP配置，用于拦截带了@SPMCache注解的方法，执行缓存环绕事物 -->
+    <aop:config>
+        <aop:aspect ref="spMCacheAspect">
+            <aop:pointcut id="cachePointcut" expression="@annotation(com.bool.spmcache.annotation.SPMCache)"/>
+            <aop:around method="checkCache" pointcut-ref="cachePointcut" />
+        </aop:aspect>
+    </aop:config>
+  	
+  	
+</beans>
