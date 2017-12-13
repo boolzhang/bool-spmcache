@@ -46,7 +46,8 @@
 <aop:config>
 	<aop:aspect ref="spmCacheAspect">
 		<!-- 定义切面为使用了注解的 -->
-		<aop:pointcut id="cachePointcut" expression="@annotation(com.bool.spmcache.annotation.SPMCache)"/>
+		<aop:pointcut id="cachePointcut" 
+		expression="@annotation(com.bool.spmcache.annotation.SPMCache)"/>
 		<!-- checkCache 为检测缓存方法 -->
 		<aop:around method="checkCache" pointcut-ref="cachePointcut" />
 	</aop:aspect>
