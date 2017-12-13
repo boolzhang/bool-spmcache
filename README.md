@@ -5,17 +5,19 @@
 腾讯云等缓存服务，阿里云建议使用sypmemcached实现，腾讯云建议使用官方的实现，至于自建Memcached
 看个人喜好把；
 
-1、优点：适用于Spring框架搭建的Web项目中，能够快速集成；
-2、缺点：具备一定的入侵性质，需要自己在业务方法中增加@SPMCache来实现缓存功能；
+**
+-- 适用于Spring框架搭建的Web项目中，能够快速集成；
+-- 支持自定义缓存实现，自带了两个常用实现；
+-- 灵活设置，根据业务自行决定缓存时间；
+-- *具备一定的入侵性质，需要自己在业务方法中增加@SPMCache来实现缓存功能；
+**
 
+# 使用方法：
+## 1、将jar包加入项目中；
 
-使用方法：
-1、将jar包加入项目中；
-```java
-将target文件夹中的bool-spmcache.jar拷贝到项目中；
-```
+`将target文件夹中的bool-spmcache.jar拷贝到项目中；`
 
-2、定义SpringXML文件，用于拦截自定义注解；
+## 2、定义SpringXML文件，用于拦截自定义注解；
 
 ```xml
 <!-- 缓存提供服务，spymemcache缓存客户端，用户可以将此框架换成其它的-->
@@ -38,7 +40,7 @@
 </aop:config>
 ```
 
-3、增加引用
+## 3、增加需要引用的第三方包
 ```xml
 <!-- 公共的引用 -->
 <dependency>
@@ -88,11 +90,11 @@
 </dependency>
 ```
 
-4、业务代码修改；exp单位为分钟，可根据业务自行决定缓存时间；
+## 4、业务代码修改，增加缓存支持
 ```java
 @Service
 public class TestServiceImpl implements TestService{
-	@SPMCache(exp=1)
+	@SPMCache(exp=1)//exp单位为分钟，根据自身业务设置，默认为30分钟
 	@Override
 	public String findSometing() {
 		/*
