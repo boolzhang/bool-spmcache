@@ -1,12 +1,19 @@
 # bool-spmcache
-a memcached framework based spring and memcached.
-一个简单的封装，基于Memcached和Spring，使用AOP和自定义注解，快捷实现了Memcached的功能；
-提供了Java官方的缓存客户端和sypmemcached客户端做了缓存客户端，并且可以自行扩展处理逻辑；
+
+一个基于Memcached和Spring的简单封装框架，使用自定义注解+Spring AOP实现了Memcached缓存功能；
+提供了Java官方的缓存客户端和sypmemcached客户端作为实现，可以普遍用于自建Memcached或阿里云、
+腾讯云等缓存服务，阿里云建议使用sypmemcached实现，腾讯云建议使用官方的实现，至于自建Memcached
+看个人喜好把；
+
+1、优点：适用于Spring框架搭建的Web项目中，能够快速集成；
+2、缺点：具备一定的入侵性质，需要自己在业务方法中增加@SPMCache来实现缓存功能；
 
 
 使用方法：
 1、将jar包加入项目中；
+```java
 将target文件夹中的bool-spmcache.jar拷贝到项目中；
+```
 
 2、定义SpringXML文件，用于拦截自定义注解；
 
