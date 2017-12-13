@@ -18,23 +18,38 @@
 ## 2、定义SpringXML文件，用于拦截自定义注解；
 
 ```xml
-<!-- 缓存提供服务，spymemcache缓存客户端，用户可以将此框架换成其它的-->
+
+<!-- 缓存实现1：spymemcached-->
+<!-- 缓存提供服务，spymemcache缓存客户端-->
 <bean id="spyProvider" class="com.bool.spmcache.provider.impl.SpyProvider">
 	<!-- 多个服务器用逗号隔开,如：127.0.0.1:11211,192.168.1.188:11211 -->
 	<constructor-arg name="servers" value="127.0.0.1:11211" />
+	<!-- 缓存的key前缀，用于区分不同项目的缓存，避免缓存极端情况下缓存错乱的问题-->
 	<constructor-arg name="keyPrefix" value="SPMC_" />
 </bean>
 
-<bean id="spMCacheAspect" class="com.bool.spmcache.aspect.SPMCacheAspect">
-	 <property name="cahceProvider" ref="spyProvider"></property>
+<!-- 缓存实现2：官方的实现-->
+<!-- 缓存提供服务，官方缓存客户端-->
+<bean id="dangaProvider" class="com.bool.spmcache.provider.impl.DangaProvider">
+	<!-- 多个服务器用逗号隔开,如：127.0.0.1:11211,192.168.1.188:11211 -->
+	<constructor-arg name="servers" value="127.0.0.1:11211" />
+	<!-- 缓存的key前缀，用于区分不同项目的缓存，避免缓存极端情况下缓存错乱的问题-->
+	<constructor-arg name="keyPrefix" value="SPMC_" />
 </bean>
-	
+
+<!-- 注入缓存实现，上面两个实现二选一，或者自定义也可 -->
+<bean id="spmCacheAspect" class="com.bool.spmcache.aspect.SPMCacheAspect">
+	<property name="cahceProvider" ref="spyProvider"></property>
+</bean>
+
 <!-- AOP配置，用于拦截带了@SPMCache注解的方法，执行缓存环绕事物 -->
 <aop:config>
-      <aop:aspect ref="spMCacheAspect">
-        <aop:pointcut id="cachePointcut" expression="@annotation(com.bool.spmcache.annotation.SPMCache)"/>
-        <aop:around method="checkCache" pointcut-ref="cachePointcut" />
-      </aop:aspect>
+	<aop:aspect ref="spmCacheAspect">
+		<!-- 定义切面为使用了注解的 -->
+		<aop:pointcut id="cachePointcut" expression="@annotation(com.bool.spmcache.annotation.SPMCache)"/>
+		<!-- checkCache 为检测缓存方法 -->
+		<aop:around method="checkCache" pointcut-ref="cachePointcut" />
+	</aop:aspect>
 </aop:config>
 ```
 
